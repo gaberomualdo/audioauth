@@ -1,112 +1,61 @@
-// function to record audio
-// code from most of this function taken from Bryan Jennings on https://medium.com/@bryanjenningz/how-to-record-and-play-audio-in-javascript-faa1b2b3e49b
-const recordAudioWithMicrophone = () => {
-  return new Promise((resolve) => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioChunks = [];
+// tabs functionality
+const openTab = (tabIdx) => {
+  document.querySelector('nav ul button.on').classList.remove('on');
+  document.querySelector('nav ul button:nth-child(' + (tabIdx + 1) + ')').classList.add('on');
 
-      mediaRecorder.addEventListener('dataavailable', (event) => {
-        audioChunks.push(event.data);
-      });
+  document.querySelector('.container .tabs .tab.on').classList.remove('on');
+  document.querySelector('.container .tabs .tab:nth-child(' + (tabIdx + 1) + ')').classList.add('on');
 
-      const start = () => {
-        mediaRecorder.start();
-      };
-
-      const stop = () => {
-        return new Promise((resolve) => {
-          mediaRecorder.addEventListener('stop', () => {
-            const audioBlob = new Blob(audioChunks);
-            const audioURL = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioURL);
-            const play = () => {
-              audio.play();
-            };
-
-            resolve({ audioBlob, audioURL, play });
-          });
-
-          mediaRecorder.stop();
-        });
-      };
-
-      resolve({ start, stop });
-    });
-  });
+  window.dispatchEvent(new Event('resize'));
 };
 
-const microphoneBtnElm = document.querySelector('.microphone-btn');
-const acceptAudioBtnElm = document.querySelector('.acceptaudio-btn');
+let updateRecordTimeInterval;
+let recordTime = 0;
 
-// variable for to be defined audio recorder (used on click of microphone btn elm)
-let audioRecorder = null;
+const record = async () => {
+  const hasVerifyData = document.querySelector('.tab.authenticate-data').classList.contains('on');
+  let verifyData = undefined;
+  if (hasVerifyData) {
+    verifyData = verifyDataEditor.getValue();
+  }
+  document.querySelector('.record').setAttribute('disabled', 'true');
 
-// record audio button onclick
-microphoneBtnElm.addEventListener('click', async (e) => {
-  microphoneBtnElm.blur();
+  await startRecording();
 
-  console.log('Start Recording');
+  document.querySelector('.record').classList.add('recording');
 
-  // start recording audio
-  audioRecorder = await recordAudioWithMicrophone();
-  audioRecorder.start();
-});
+  recordTime = 0;
 
-// accept audio button onclick
-acceptAudioBtnElm.addEventListener('click', async () => {
-  // microphone ended listening, end recording and parse
-
-  console.log('Stopped Recording');
-
-  // recorded audio obj
-  const recordedAudio = await audioRecorder.stop();
-
-  // play audio (for testing purposes)
-  // recordedAudio.play();
-
-  // audio blob
-  let audioBlob = recordedAudio.audioBlob;
-
-  // read recorded audio into wav file
-  const fileReaderObj = new FileReader();
-  fileReaderObj.onload = async (e) => {
-    const fileContents = base64ArrayBuffer(e.target.result);
-    if (byteLength(fileContents) > 375000) {
-      return alert('Audio size exceeds 375 kb limit.');
+  const update = async () => {
+    recordTime += 1;
+    let timeStr = (recordTime / 10).toString();
+    if (!timeStr.includes('.')) {
+      timeStr += '.0';
     }
-    // send post request to base64-to-file API with file data
-    const b64ToFileResponse = await fetch(config['B64FileAPIBaseURL'], {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ fileContents }),
-    });
+    document.querySelector('.record .recording-status').innerHTML = 'Recording... (<span>' + timeStr + '</span>&nbsp;s)';
 
-    // get file path and make absolute (by prepending base URL of API)
-    let { filePath } = await b64ToFileResponse.json();
-    const fileURL = config['B64FileAPIBaseURL'] + filePath;
+    if (recordTime >= 150) {
+      clearInterval(updateRecordTimeInterval);
+      window.updateRecordTimeInterval = undefined;
 
-    // send request to AudioAuth API with audio file path
-    const authResponseObj = await fetch(config['authAPIBaseURL'], {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ audioAuthAudioURL: fileURL }),
-    });
+      document.querySelector('.record').classList.remove('recording');
+      document.querySelector('.record').removeAttribute('disabled');
 
-    const authResponse = await authResponseObj.json();
+      if (hasVerifyData) {
+        outputEditor2.setValue('// Loading API Response...');
+      } else {
+        outputEditor1.setValue('// Loading API Response...');
+      }
 
-    console.log(authResponse);
-
-    alert(authResponse.authorized ? 'Success!' : 'Authentication Failed.');
-
-    // remove audio file from file API in order to save storage
-    await fetch(config['B64FileAPIBaseURL'] + 'remove_file.php?filepath=' + encodeURIComponent(filePath), {
-      method: 'GET',
-    });
+      await stopRecording((resp) => {
+        if (hasVerifyData) {
+          outputEditor2.setValue(JSON.stringify(resp, null, '\t'));
+        } else {
+          outputEditor1.setValue(JSON.stringify(resp, null, '\t'));
+        }
+      }, verifyData);
+    }
   };
-  fileReaderObj.readAsArrayBuffer(audioBlob);
-});
+  updateRecordTimeInterval = setInterval(update, 100);
+  update();
+};

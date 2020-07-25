@@ -4,16 +4,113 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AudioAuth Example</title>
+    <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
-    <button class="microphone-btn">Start Speaking</button>
-    <button class="acceptaudio-btn">End Speaking</button>
+    <nav>
+      <div class="top">
+        AudioAuth Playground
+      </div>
+      <ul>
+        <button class="on" onclick="openTab(0)">Get Song Verification Data</button>
+        <button class="" onclick="openTab(1)">Authenticate With Verification Data</button>
+      </ul>
+    </nav>
+
+    <main class="main">
+      <div class="container">
+        <div class="row">
+          <button class="record" onclick="record(this.classList.contains('recording'))">
+            <span class="start">
+              Record Audio
+            </span>
+            <span class="recording-status"></span>
+          </button>
+        </div>
+        <div class="tabs">
+          <div class="tab get-data on">
+            <div class="editor-container resp-data">
+              <h1>API Response</h1>
+              <div class="editor"></div>
+            </div>
+          </div>
+          <div class="tab authenticate-data">
+            <div class="editor-container verification-data">
+              <h1><code>verifyWith</code> object</h1>
+              <div class="editor"></div>
+            </div>
+            <div class="editor-container resp-data">
+              <h1>API Response</h1>
+              <div class="editor"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
 
     <!-- scripts -->
     <script src="script/vendor/base64ArrayBuffer.js"></script>
     <script src="script/vendor/utils.js"></script>
 
     <script src="script/config.js"></script>
+    <script src="script/record_and_api.js"></script>
     <script src="script/script.js"></script>
+
+    <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script>
+      require.config({ paths: { vs: '../node_modules/monaco-editor/min/vs' } });
+
+      let verifyDataEditor;
+      let outputEditor1;
+      let outputEditor2;
+
+      require(['vs/editor/editor.main'], function () {
+        const config = {
+          scrollBeyondLastLine: false,
+          theme: 'vs-light',
+          lineNumbers: 'off',
+          roundedSelection: true,
+          fontSize: '16px',
+          automaticLayout: true,
+          dragAndDrop: true,
+          formatOnType: true,
+          copyWithSyntaxHighlighting: false,
+
+          language: 'json',
+
+          scrollbar: {
+            verticalScrollbarSize: 8,
+            horizontalScrollbarSize: 8,
+          },
+
+          // no minimap
+          minimap: {
+            enabled: false,
+          },
+
+          // no context menu
+          contextmenu: false,
+
+          // no overview ruler
+          hideCursorInOverviewRuler: true,
+          overviewRulerBorder: false,
+          overviewRulerLanes: 0,
+        };
+        outputEditor1 = monaco.editor.create(document.querySelector('.tab.get-data .editor'), {
+          value: '',
+          ...config,
+          readOnly: true,
+        });
+        verifyDataEditor = monaco.editor.create(document.querySelector('.tab.authenticate-data .verification-data .editor'), {
+          value: '{\n\t\n}',
+          ...config,
+        });
+        outputEditor2 = monaco.editor.create(document.querySelector('.tab.authenticate-data .resp-data .editor'), {
+          value: '',
+          ...config,
+          readOnly: true,
+        });
+      });
+    </script>
   </body>
 </html>

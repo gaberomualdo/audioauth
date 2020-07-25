@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #333;
+  text-decoration: none;
+}
+body,
+button {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+code {
+  word-break: break-word;
+  background-color: #efefef;
+  padding: 2px 4px;
+  font-size: 85%;
+  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+  border-radius: 4px;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.5rem;
+  padding-top: 0;
+  text-align: center;
+  overflow: hidden;
+  background-color: #fff;
+  z-index: 9999;
+}
+nav > * {
+  display: block;
+  float: left;
+  width: 100%;
+  overflow: hidden;
+}
+nav .top {
+  line-height: 2;
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 1rem 0;
+}
+nav ul {
+  font-size: 0;
+}
+nav ul button {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  display: inline-block;
+  margin: 0 0.75rem;
+  padding: 0 0.25rem;
+  padding-bottom: 0.5rem;
+  text-decoration: none;
+  font-size: 1.15rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+  cursor: pointer;
+  color: #888;
+  user-select: none;
+}
+nav ul button:hover {
+  border-color: #ddd;
+}
+nav ul button.on {
+  border-color: #28f;
+  color: #28f;
+}
+
+.main {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.container {
+  width: 1100px;
+  padding: 2.5rem 0;
+  padding-bottom: 3.5rem;
+  position: relative;
+}
+@media only screen and (max-width: 1150px) {
+  .container {
+    width: 95%;
+  }
+}
+
+.container > .row,
+.container > .tabs > * {
+  display: block;
+  width: 100%;
+  float: left;
+  clear: both;
+}
+
+.container .row {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.container .record {
+  width: 15rem;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  outline: none;
+  border-radius: 4px;
+  background-color: #fff;
+  background-color: transparent;
+  padding: 0.5rem 1rem;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  transition: transform 0.25s, box-shadow 0.25s, background-color 0.25s, color 0.25s;
+}
+.container .record * {
+  color: inherit;
+}
+.container .record > * > span {
+  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+  letter-spacing: -0.07rem;
+}
+.container .record:not(:disabled) {
+  cursor: pointer;
+}
+.container .record:not(:disabled):hover {
+  transform: translateY(-0.2rem);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.container .record:not(:disabled):active {
+  transform: translateY(-0.1rem);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+.container .record.recording {
+  color: #fff;
+  background-color: #e74c3c;
+}
+.container .record:not(.recording) .recording-status,
+.container .record.recording .start {
+  display: none;
+}
+
+.container .tab:not(.on) {
+  display: none;
+}
+.container .tab {
+  display: flex;
+}
+.container .tab .editor-container {
+  flex-basis: 100%;
+  flex-shrink: 1;
+}
+.container .tab .editor-container:not(:last-child) {
+  margin-right: 2rem;
+}
+.container .tab h1 {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  text-align: left;
+  margin-bottom: 0.75rem;
+}
+.container .tab .editor {
+  height: 25rem;
+  width: 100%;
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  border-radius: 4px;
+}

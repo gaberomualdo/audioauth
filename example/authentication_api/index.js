@@ -34,24 +34,16 @@ app.post('/', async (req, res) => {
         body: JSON.stringify({
           audioURL: audioAuthAudioURL,
           verifyWith: {
-            songId: '1P7vVbFFOtFH4RYNUPEiK2',
+            songExplicit: true,
           },
         }),
       });
 
-      if (audioAuthResp.status === 200) {
-        const jsonResp = await audioAuthResp.json();
-
-        console.log(jsonResp);
-
-        if (jsonResp.status === 'success' && jsonResp.authorized === true) {
-          return res.json({ authorized: true });
-        }
-      }
+      return res.json(await audioAuthResp.json());
     } catch (err) {}
-    return res.json({ authorized: false });
+    return res.json({ error: 'Internal error occurred.' });
   } else {
-    res.status(400).json({ error: "Missing required parameter 'audioAuthAudioURL'." });
+    return res.status(400).json({ error: "Missing required parameter 'audioAuthAudioURL'." });
   }
 });
 const PORT = process.env.PORT || 1453;

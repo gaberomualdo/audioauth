@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('config');
 const requestP = require('request-promise');
+const { match } = require('assert');
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.post('/', async (req, res) => {
 
     if (responseFromAPI.status === 'success') {
       const { songData } = responseFromAPI;
-      const songVerifyData = createVerifyWithObj(songData.result.spotify);
+      const songVerifyData = createVerifyWithObj(songData.result.spotify, songData.result.timecode);
 
       if (verifyWith) {
         try {
@@ -312,7 +313,7 @@ const INTERNAL_ERROR_RESPONSE = {
     'An internal error occurred. The webmaster will likely take a look at the issue within the next 24 hours. Contact xtrp@xtrp.io for more details.',
 };
 
-const createVerifyWithObj = (spotifyObj) => {
+const createVerifyWithObj = (spotifyObj, matchedAtTimecode) => {
   return pruneUndefinedFromObject({
     albumName: spotifyObj.album.name,
     albumArtists: getSimplifiedArtistList(spotifyObj.album.artists),
@@ -325,6 +326,15 @@ const createVerifyWithObj = (spotifyObj) => {
     songExplicit: spotifyObj.explicit,
     songTrackNumber: spotifyObj.track_number,
     songId: spotifyObj.id,
+    matchedAtMS: (() => {
+      // matchedAtTimeCode looks like: mm:ss
+      // convert mm:ss to milliseconds
+      let rVal = 0;
+      const splitMatchedAtTimecode = matchedAtTimecode.split(':').map((e) => parseInt(e));
+      rVal += 60 * 1000 * splitMatchedAtTimecode[0];
+      rVal += 1000 * splitMatchedAtTimecode[1];
+      return rVal;
+    })(),
   });
 };
 
