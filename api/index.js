@@ -1,10 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('config');
-const { response } = require('express');
 const requestP = require('request-promise');
-const { create } = require('lodash');
-const { verify } = require('tweetnacl');
 
 const app = express();
 
@@ -132,114 +129,116 @@ const recognizeFromAPI = async (audioURL) => {
   };
 
   try {
-    // const responseFromAPI = JSON.parse(
-    //   await requestP({
-    //     uri: audDAPIURL,
-    //     form: dataForAPIRequest,
-    //     method: 'POST',
-    //   })
-    // );
+    const responseFromAPI = JSON.parse(
+      await requestP({
+        uri: audDAPIURL,
+        form: dataForAPIRequest,
+        method: 'POST',
+      })
+    );
 
     // example response
-    const responseFromAPI = {
-      status: 'success',
-      result: {
-        artist: 'Juice WRLD',
-        title: 'Come \u0026 Go (with Marshmello)',
-        album: 'Come \u0026 Go (with Marshmello)',
-        release_date: '2020-07-09',
-        label: 'Grade A Productions/Interscope Records',
-        timecode: '00:16',
-        song_link: 'https://lis.tn/mpvWM',
-        spotify: {
-          album: {
-            album_type: 'album',
-            artists: [
-              {
-                external_urls: {
-                  spotify: 'https://open.spotify.com/artist/4MCBfE4596Uoi2O4DtmEMz',
-                },
-                href: 'https://api.spotify.com/v1/artists/4MCBfE4596Uoi2O4DtmEMz',
-                id: '4MCBfE4596Uoi2O4DtmEMz',
-                name: 'Juice WRLD',
-                type: 'artist',
-                uri: 'spotify:artist:4MCBfE4596Uoi2O4DtmEMz',
+    /* const responseFromAPI = JSON.parse(
+      `{
+        "status":"success",
+        "result":{
+           "artist":"Juice WRLD",
+           "title":"Come \u0026 Go (with Marshmello)",
+           "album":"Come \u0026 Go (with Marshmello)",
+           "release_date":"2020-07-09",
+           "label":"Grade A Productions/Interscope Records",
+           "timecode":"00:16",
+           "song_link":"https://lis.tn/mpvWM",
+           "spotify":{
+              "album":{
+                 "album_type":"album",
+                 "artists":[
+                    {
+                       "external_urls":{
+                          "spotify":"https://open.spotify.com/artist/4MCBfE4596Uoi2O4DtmEMz"
+                       },
+                       "href":"https://api.spotify.com/v1/artists/4MCBfE4596Uoi2O4DtmEMz",
+                       "id":"4MCBfE4596Uoi2O4DtmEMz",
+                       "name":"Juice WRLD",
+                       "type":"artist",
+                       "uri":"spotify:artist:4MCBfE4596Uoi2O4DtmEMz"
+                    }
+                 ],
+                 "available_markets":null,
+                 "external_urls":{
+                    "spotify":"https://open.spotify.com/album/0Zs0b11dQneqR0rfNhbGU4"
+                 },
+                 "href":"https://api.spotify.com/v1/albums/0Zs0b11dQneqR0rfNhbGU4",
+                 "id":"0Zs0b11dQneqR0rfNhbGU4",
+                 "images":[
+                    {
+                       "height":640,
+                       "url":"https://i.scdn.co/image/ab67616d0000b2731db3f108ae95900279c0e16f",
+                       "width":640
+                    },
+                    {
+                       "height":300,
+                       "url":"https://i.scdn.co/image/ab67616d00001e021db3f108ae95900279c0e16f",
+                       "width":300
+                    },
+                    {
+                       "height":64,
+                       "url":"https://i.scdn.co/image/ab67616d000048511db3f108ae95900279c0e16f",
+                       "width":64
+                    }
+                 ],
+                 "name":"Legends Never Die",
+                 "release_date":"2020-07-10",
+                 "release_date_precision":"day",
+                 "total_tracks":21,
+                 "type":"album",
+                 "uri":"spotify:album:0Zs0b11dQneqR0rfNhbGU4"
               },
-            ],
-            available_markets: null,
-            external_urls: {
-              spotify: 'https://open.spotify.com/album/0Zs0b11dQneqR0rfNhbGU4',
-            },
-            href: 'https://api.spotify.com/v1/albums/0Zs0b11dQneqR0rfNhbGU4',
-            id: '0Zs0b11dQneqR0rfNhbGU4',
-            images: [
-              {
-                height: 640,
-                url: 'https://i.scdn.co/image/ab67616d0000b2731db3f108ae95900279c0e16f',
-                width: 640,
+              "artists":[
+                 {
+                    "external_urls":{
+                       "spotify":"https://open.spotify.com/artist/4MCBfE4596Uoi2O4DtmEMz"
+                    },
+                    "href":"https://api.spotify.com/v1/artists/4MCBfE4596Uoi2O4DtmEMz",
+                    "id":"4MCBfE4596Uoi2O4DtmEMz",
+                    "name":"Juice WRLD",
+                    "type":"artist",
+                    "uri":"spotify:artist:4MCBfE4596Uoi2O4DtmEMz"
+                 },
+                 {
+                    "external_urls":{
+                       "spotify":"https://open.spotify.com/artist/64KEffDW9EtZ1y2vBYgq8T"
+                    },
+                    "href":"https://api.spotify.com/v1/artists/64KEffDW9EtZ1y2vBYgq8T",
+                    "id":"64KEffDW9EtZ1y2vBYgq8T",
+                    "name":"Marshmello",
+                    "type":"artist",
+                    "uri":"spotify:artist:64KEffDW9EtZ1y2vBYgq8T"
+                 }
+              ],
+              "available_markets":null,
+              "disc_number":1,
+              "duration_ms":205498,
+              "explicit":false,
+              "external_ids":{
+                 "isrc":"USUG12002084"
               },
-              {
-                height: 300,
-                url: 'https://i.scdn.co/image/ab67616d00001e021db3f108ae95900279c0e16f',
-                width: 300,
+              "external_urls":{
+                 "spotify":"https://open.spotify.com/track/1P7vVbFFOtFH4RYNUPEiK2"
               },
-              {
-                height: 64,
-                url: 'https://i.scdn.co/image/ab67616d000048511db3f108ae95900279c0e16f',
-                width: 64,
-              },
-            ],
-            name: 'Legends Never Die',
-            release_date: '2020-07-10',
-            release_date_precision: 'day',
-            total_tracks: 21,
-            type: 'album',
-            uri: 'spotify:album:0Zs0b11dQneqR0rfNhbGU4',
-          },
-          artists: [
-            {
-              external_urls: {
-                spotify: 'https://open.spotify.com/artist/4MCBfE4596Uoi2O4DtmEMz',
-              },
-              href: 'https://api.spotify.com/v1/artists/4MCBfE4596Uoi2O4DtmEMz',
-              id: '4MCBfE4596Uoi2O4DtmEMz',
-              name: 'Juice WRLD',
-              type: 'artist',
-              uri: 'spotify:artist:4MCBfE4596Uoi2O4DtmEMz',
-            },
-            {
-              external_urls: {
-                spotify: 'https://open.spotify.com/artist/64KEffDW9EtZ1y2vBYgq8T',
-              },
-              href: 'https://api.spotify.com/v1/artists/64KEffDW9EtZ1y2vBYgq8T',
-              id: '64KEffDW9EtZ1y2vBYgq8T',
-              name: 'Marshmello',
-              type: 'artist',
-              uri: 'spotify:artist:64KEffDW9EtZ1y2vBYgq8T',
-            },
-          ],
-          available_markets: null,
-          disc_number: 1,
-          duration_ms: 205498,
-          explicit: false,
-          external_ids: {
-            isrc: 'USUG12002084',
-          },
-          external_urls: {
-            spotify: 'https://open.spotify.com/track/1P7vVbFFOtFH4RYNUPEiK2',
-          },
-          href: 'https://api.spotify.com/v1/tracks/1P7vVbFFOtFH4RYNUPEiK2',
-          id: '1P7vVbFFOtFH4RYNUPEiK2',
-          is_local: false,
-          name: 'Come \u0026 Go (with Marshmello)',
-          popularity: 68,
-          preview_url: '',
-          track_number: 11,
-          type: 'track',
-          uri: 'spotify:track:1P7vVbFFOtFH4RYNUPEiK2',
-        },
-      },
-    };
+              "href":"https://api.spotify.com/v1/tracks/1P7vVbFFOtFH4RYNUPEiK2",
+              "id":"1P7vVbFFOtFH4RYNUPEiK2",
+              "is_local":false,
+              "name":"Come \u0026 Go (with Marshmello)",
+              "popularity":68,
+              "preview_url":"",
+              "track_number":11,
+              "type":"track",
+              "uri":"spotify:track:1P7vVbFFOtFH4RYNUPEiK2"
+           }
+        }
+     }`
+    ); */
 
     if (responseFromAPI.status === 'success') {
       // request params (including audio URL) were valid and request worked

@@ -1,3 +1,4 @@
 api/config/default.json
 api/node_modules
+example/authentication_api/node_modules
 .DS_Store
