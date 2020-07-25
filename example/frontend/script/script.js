@@ -13,11 +13,6 @@ let updateRecordTimeInterval;
 let recordTime = 0;
 
 const record = async () => {
-  const hasVerifyData = document.querySelector('.tab.authenticate-data').classList.contains('on');
-  let verifyData = undefined;
-  if (hasVerifyData) {
-    verifyData = verifyDataEditor.getValue();
-  }
   document.querySelector('.record').setAttribute('disabled', 'true');
 
   await startRecording();
@@ -34,12 +29,23 @@ const record = async () => {
     }
     document.querySelector('.record .recording-status').innerHTML = 'Recording... (<span>' + timeStr + '</span>&nbsp;s)';
 
-    if (recordTime >= 150) {
+    if (recordTime >= 75) {
       clearInterval(updateRecordTimeInterval);
       window.updateRecordTimeInterval = undefined;
 
       document.querySelector('.record').classList.remove('recording');
       document.querySelector('.record').removeAttribute('disabled');
+
+      const hasVerifyData = document.querySelector('.tab.authenticate-data').classList.contains('on');
+      let verifyData = undefined;
+      if (hasVerifyData) {
+        try {
+          verifyData = JSON.parse(verifyDataEditor.getValue());
+        } catch (err) {
+          alert('Invalid JSON');
+          return;
+        }
+      }
 
       if (hasVerifyData) {
         outputEditor2.setValue('// Loading API Response...');

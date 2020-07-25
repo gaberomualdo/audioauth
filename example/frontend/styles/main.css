@@ -78,12 +78,12 @@ nav ul button.on {
   justify-content: center;
 }
 .container {
-  width: 1100px;
+  width: 1200px;
   padding: 2.5rem 0;
   padding-bottom: 3.5rem;
   position: relative;
 }
-@media only screen and (max-width: 1150px) {
+@media only screen and (max-width: 1250px) {
   .container {
     width: 95%;
   }
@@ -133,11 +133,31 @@ nav ul button.on {
 }
 .container .record.recording {
   color: #fff;
+  border-color: transparent;
   background-color: #e74c3c;
 }
 .container .record:not(.recording) .recording-status,
+.container .record:not(.recording) + .cut-record,
 .container .record.recording .start {
   display: none;
+}
+.container .cut-record {
+  border: 2px solid transparent;
+  position: absolute;
+  outline: none;
+  border-radius: 4px;
+  background-color: transparent;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.container .cut-record svg {
+  height: 2.0125rem;
+  width: 2.0125rem;
+  padding: 0.5rem;
+  cursor: pointer;
 }
 
 .container .tab:not(.on) {

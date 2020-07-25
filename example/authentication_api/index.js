@@ -23,20 +23,27 @@ app.use(allowCORSRequests);
 
 // Routes
 app.post('/', async (req, res) => {
-  const { audioAuthAudioURL } = req.body;
+  const { audioAuthAudioURL, verifyWith } = req.body;
   if (audioAuthAudioURL) {
+    let data;
+    if (verifyWith) {
+      data = {
+        audioURL: audioAuthAudioURL,
+        verifyWith,
+      };
+    } else {
+      data = {
+        audioURL: audioAuthAudioURL,
+      };
+    }
+
     try {
       const audioAuthResp = await fetch(audioAuthAPIBaseURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          audioURL: audioAuthAudioURL,
-          verifyWith: {
-            songExplicit: true,
-          },
-        }),
+        body: JSON.stringify(data),
       });
 
       return res.json(await audioAuthResp.json());
