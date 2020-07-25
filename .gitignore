@@ -1,2 +1,3 @@
 api/config/default.json
 api/node_modules
+.DS_Store
